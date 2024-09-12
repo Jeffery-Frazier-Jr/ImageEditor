@@ -1,6 +1,6 @@
 import customtkinter as ctk
 from Image_Widgets import *
-from PIL import Image, ImageTk
+from PIL import Image, ImageTk, ImageOps
 from menu import Menu
 
 class App(ctk.CTk):
@@ -32,14 +32,20 @@ class App(ctk.CTk):
         self.mainloop()
 
     def init_parameters(self):
-        self.rotat_float = ctk.DoubleVar(value = ROTATE_DEFAULT)
-        self.rotat_float.trace('w', self.manipulate_image)
+        self.rotate_float = ctk.DoubleVar(value = ROTATE_DEFAULT)
+        self.zoom_float = ctk.DoubleVar(value = ZOOM_DEFAULT)
+
+        self.rotate_float.trace('w', self.manipulate_image)
+        self.zoom_float.trace('w', self.manipulate_image)
     
     def manipulate_image(self, *args):
         self.image = self.original
 
-        #rotate
-        self.image = self.image.rotate(self.rotat_float.get())
+        # rotate
+        self.image = self.image.rotate(self.rotate_float.get())
+
+        # zoom
+        self.image = ImageOps.crop(image = self.image, border = self.zoom_float.get())
 
         self.place_image()
 
@@ -52,7 +58,7 @@ class App(ctk.CTk):
         self.image_import.grid_forget()
         self.image_output = ImageOutput(self, self.resize_image)
         self.close_button = CloseOutput(self, self.close_edit)
-        self.menu = Menu(self, self.rotat_float)
+        self.menu = Menu(self, self.rotate_float, self.zoom_float)
 
     def close_edit(self):
         self.image_output.grid_forget()
