@@ -1,6 +1,7 @@
 import customtkinter as ctk
 from Image_Widgets import *
 from PIL import Image, ImageTk
+from menu import Menu
 
 class App(ctk.CTk):
     def __init__(self):
@@ -14,8 +15,8 @@ class App(ctk.CTk):
 
         # layout
         self.rowconfigure(0, weight = 1)
-        self.columnconfigure(0, weight = 2)
-        self.columnconfigure(1, weight = 6)
+        self.columnconfigure(0, weight = 2, uniform = 'a')
+        self.columnconfigure(1, weight = 6, uniform = 'a')
 
         # widgets
         self.image_import = ImageImport(self, self.import_image)
@@ -31,10 +32,12 @@ class App(ctk.CTk):
         self.image_import.grid_forget()
         self.image_output = ImageOutput(self, self.resize_image)
         self.close_button = CloseOutput(self, self.close_edit)
+        self.menu = Menu(self)
 
     def close_edit(self):
         self.image_output.grid_forget()
         self.close_button.place_forget()
+        self.menu.grid_forget()
         self.image_import = ImageImport(self, self.import_image)
 
     def resize_image(self, event):
@@ -48,7 +51,7 @@ class App(ctk.CTk):
             image_width = int(image_height * self.image_ratio)
         else: # canvas is taller than the image
             image_width = int(event.width)
-            image_height = int(image_width * self.image_ratio)
+            image_height = int(image_width / self.image_ratio)
 
         # place image
         self.image_output.delete('all')
